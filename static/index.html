@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1f3864">
+<title>Airbnb Maintenance</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    font-size: 16px;
+    color: #1a1a1a;
+    background: #f5f5f5;
+    min-height: 100vh;
+    -webkit-text-size-adjust: 100%;
+  }
+  input, select, textarea, button {
+    font-family: inherit;
+    font-size: 16px;
+  }
+
+  /* ====== HEADER ====== */
+  header {
+    background: #1f3864;
+    color: #fff;
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  header h1 {
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .header-actions { display: flex; gap: 6px; }
+  .header-actions button {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    min-height: 38px;
+  }
+  .header-actions button:active { background: rgba(255,255,255,0.3); }
+
+  main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 12px;
+  }
+
+  /* ====== ROOMS LIST ====== */
+  .rooms-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  @media (min-width: 700px) {
+    .rooms-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+  }
+  .room-card {
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    min-height: 80px;
+  }
+  .room-card:active { background: #f0f7ff; border-color: #2e75b6; }
+  .room-card h3 {
+    font-size: 17px;
+    margin-bottom: 10px;
+    color: #1f3864;
+    word-wrap: break-word;
+  }
+  .room-meta {
+    font-size: 14px;
+    color: #555;
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .room-meta .ok { color: #2e7d32; font-weight: 600; }
+  .room-meta .issue { color: #c62828; font-weight: 700; }
+
+  .add-room-card {
+    background: #fff;
+    border: 2px dashed #2e75b6;
+    border-radius: 8px;
+    padding: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2e75b6;
+    min-height: 70px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .add-room-card:active { background: #eef5fc; }
+  .add-room-card .plus { font-size: 22px; margin-right: 8px; }
+
+  /* ====== ROOM DETAIL ====== */
+  .back-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .back-btn {
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    min-height: 42px;
+  }
+  .back-btn:active { background: #f0f0f0; }
+
+  .room-info {
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .info-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+  .info-row:last-of-type { margin-bottom: 0; }
+  .info-row label {
+    font-weight: 600;
+    color: #555;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .info-row input, .info-row textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 16px;
+    background: #fafafa;
+  }
+  .info-row input:focus, .info-row textarea:focus {
+    outline: none;
+    border-color: #2e75b6;
+    background: #fff;
+  }
+  .info-row textarea { min-height: 70px; resize: vertical; }
+  .map-link-row { display: flex; gap: 6px; }
+  .map-link-row input { flex: 1; min-width: 0; }
+  .open-map-btn {
+    background: #2e75b6;
+    color: #fff;
+    border: none;
+    padding: 0 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap;
+    min-height: 42px;
+    font-weight: 600;
+  }
+  .open-map-btn:active { background: #235a8c; }
+  .open-map-btn:disabled { background: #b0b0b0; cursor: not-allowed; }
+
+  .room-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #eee;
+    flex-wrap: wrap;
+  }
+  .room-actions button {
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid #d0d0d0;
+    background: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    min-height: 42px;
+    font-weight: 600;
+    flex: 1;
+    min-width: 140px;
+  }
+  .room-actions button:active { background: #f0f0f0; }
+  .room-actions .danger { color: #c62828; border-color: #f5b5b5; }
+  .room-actions .danger:active { background: #fff0f0; }
+  .room-actions .primary {
+    background: #2e75b6;
+    color: #fff;
+    border-color: #2e75b6;
+  }
+  .room-actions .primary:active { background: #235a8c; }
+
+  /* ====== CHECKLIST ====== */
+  .checklist-wrapper {
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .checklist-toolbar {
+    padding: 12px 14px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .checklist-toolbar .title {
+    font-weight: 700;
+    font-size: 15px;
+    color: #1f3864;
+    margin-bottom: 8px;
+  }
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+  .summary-cell {
+    text-align: center;
+    padding: 8px 4px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+  }
+  .summary-cell .num { font-size: 20px; font-weight: 700; display: block; line-height: 1; }
+  .summary-cell .lbl { color: #666; font-size: 11px; text-transform: uppercase; margin-top: 4px; display: block; }
+  .summary-cell.ok .num { color: #2e7d32; }
+  .summary-cell.issue .num { color: #c62828; }
+  .summary-cell.pending .num { color: #d97706; }
+
+  /* ====== MOBILE CARD LAYOUT (default) ====== */
+  .checklist-list { padding: 0; }
+
+  .cat-header {
+    background: #d9e1f2;
+    color: #1f3864;
+    font-weight: 700;
+    padding: 12px 14px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #b8c6e0;
+  }
+  .cat-header:first-child { border-top: none; }
+  .cat-header .toggle {
+    font-size: 12px;
+    transition: transform 0.2s;
+    display: inline-block;
+  }
+  .cat-header.collapsed .toggle { transform: rotate(-90deg); }
+  .cat-count {
+    font-size: 11px;
+    color: #1f3864;
+    background: rgba(255,255,255,0.7);
+    padding: 3px 9px;
+    border-radius: 10px;
+    font-weight: 700;
+  }
+  .cat-right { display: flex; align-items: center; gap: 8px; }
+
+  .item-card {
+    border-bottom: 1px solid #ececec;
+    padding: 14px;
+    background: #fff;
+  }
+  .item-num-desc {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: flex-start;
+  }
+  .item-num {
+    color: #999;
+    font-size: 13px;
+    font-weight: 700;
+    min-width: 26px;
+    padding-top: 11px;
+  }
+  .item-desc {
+    flex: 1;
+    border: 1px solid transparent;
+    background: transparent;
+    padding: 8px 10px;
+    border-radius: 5px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #1a1a1a;
+    width: 100%;
+    line-height: 1.35;
+    min-width: 0;
+  }
+  .item-desc:focus {
+    outline: none;
+    border-color: #2e75b6;
+    background: #fff;
+  }
+  .item-meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-left: 36px;
+  }
+  .meta-field { display: flex; flex-direction: column; gap: 4px; }
+  .meta-field label {
+    font-size: 11px;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    font-weight: 700;
+  }
+  .item-status {
+    padding: 11px 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    background: #fafafa;
+    width: 100%;
+    min-height: 46px;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 18px;
+    padding-right: 36px;
+  }
+  .item-note {
+    padding: 10px 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 15px;
+    background: #fafafa;
+    width: 100%;
+    min-height: 44px;
+  }
+  .item-note:focus, .item-status:focus {
+    outline: none;
+    border-color: #2e75b6;
+    background: #fff;
+  }
+  .item-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    margin-left: 36px;
+  }
+  .item-date { font-size: 12px; color: #888; }
+  .delete-btn {
+    background: transparent;
+    border: 1px solid #e0e0e0;
+    color: #c62828;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-weight: 600;
+  }
+  .delete-btn:active { background: #ffebee; }
+
+  /* Status colors */
+  .status-OK { background-color: #c8e6c9 !important; color: #1b5e20 !important; border-color: #81c784 !important; }
+  .status-Action-Required { background-color: #ffcdd2 !important; color: #b71c1c !important; border-color: #e57373 !important; }
+  .status-Replaced { background-color: #fff3c4 !important; color: #6d4c00 !important; border-color: #ffd54f !important; }
+  .status-Scheduled { background-color: #cfd8dc !important; color: #37474f !important; border-color: #90a4ae !important; }
+  .status-NA { background-color: #e0e0e0 !important; color: #555 !important; }
+
+  .add-row-btn {
+    width: 100%;
+    padding: 16px;
+    background: #fafafa;
+    border: none;
+    border-top: 1px solid #e0e0e0;
+    cursor: pointer;
+    font-size: 15px;
+    color: #2e75b6;
+    font-weight: 700;
+    min-height: 50px;
+  }
+  .add-row-btn:active { background: #eef5fc; }
+
+  /* ====== DESKTOP TABLE ====== */
+  .checklist-table-wrap { display: none; }
+
+  @media (min-width: 900px) {
+    .info-row {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      align-items: center;
+      gap: 14px;
+    }
+    .info-row label { text-transform: none; letter-spacing: 0; font-size: 14px; }
+
+    .checklist-toolbar { display: flex; justify-content: space-between; align-items: center; }
+    .checklist-toolbar .title { margin-bottom: 0; }
+    .summary-grid { grid-template-columns: repeat(4, max-content); }
+    .summary-cell { padding: 6px 14px; }
+    .summary-cell .num { font-size: 16px; display: inline; margin-right: 4px; }
+    .summary-cell .lbl { display: inline; margin-top: 0; }
+
+    .checklist-list { display: none; }
+    .checklist-table-wrap { display: block; overflow-x: auto; }
+
+    table.checklist {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    table.checklist thead th {
+      background: #1f3864;
+      color: #fff;
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 13px;
+      border-right: 1px solid #2e4a7a;
+      white-space: nowrap;
+    }
+    table.checklist tbody td {
+      padding: 6px 10px;
+      border-bottom: 1px solid #ececec;
+      border-right: 1px solid #ececec;
+      vertical-align: middle;
+    }
+    table.checklist tbody tr:nth-child(even) td { background: #fafafa; }
+    table.checklist tbody tr:hover td { background: #f0f7ff; }
+    .cat-row td {
+      background: #d9e1f2 !important;
+      font-weight: 700;
+      color: #1f3864;
+      padding: 8px 12px !important;
+      font-size: 13px;
+    }
+    .col-num { width: 40px; text-align: center; color: #999; }
+    .col-status { width: 150px; }
+    .col-date { width: 120px; color: #666; font-size: 13px; }
+    .col-actions { width: 50px; text-align: center; }
+
+    table.checklist input[type=text],
+    table.checklist select {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      font-size: 14px;
+      background: transparent;
+    }
+    table.checklist input[type=text]:focus,
+    table.checklist select:focus {
+      outline: none;
+      border-color: #2e75b6;
+      background: #fff;
+    }
+    table.checklist .delete-btn {
+      background: transparent;
+      border: none;
+      color: #999;
+      font-size: 18px;
+      padding: 4px 8px;
+    }
+    table.checklist .delete-btn:hover { color: #c62828; background: #ffebee; border-radius: 4px; }
+  }
+
+  /* ====== MODAL ====== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 200;
+  }
+  @media (min-width: 700px) {
+    .modal-overlay { align-items: center; padding: 20px; }
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 12px 12px 0 0;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.2s ease-out;
+  }
+  @media (min-width: 700px) { .modal { border-radius: 8px; } }
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0.5; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+    font-weight: 700;
+    color: #1f3864;
+    font-size: 17px;
+  }
+  .modal-body { padding: 20px; }
+  .modal-body label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #555;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .modal-body input, .modal-body textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 16px;
+    margin-bottom: 14px;
+  }
+  .modal-body input:focus { outline: none; border-color: #2e75b6; }
+  .modal-body label.radio-label {
+    display: flex;
+    align-items: center;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+  .modal-body label.radio-label input { width: auto; margin: 0 10px 0 0; }
+  .modal-footer {
+    padding: 14px 20px 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  .modal-footer button {
+    padding: 12px 18px;
+    border-radius: 6px;
+    border: 1px solid #d0d0d0;
+    background: #fff;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    min-height: 46px;
+  }
+  .modal-footer .primary {
+    background: #2e75b6;
+    color: #fff;
+    border-color: #2e75b6;
+  }
+  .modal-footer .primary:active { background: #235a8c; }
+
+  /* ====== TOAST ====== */
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f3864;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 300;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .toast.show { opacity: 1; }
+
+  .empty-state {
+    text-align: center;
+    padding: 32px 20px;
+    color: #888;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .empty-state strong { color: #2e75b6; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1 onclick="showRoomList()">🏠 Airbnb Maintenance</h1>
+  <div class="header-actions">
+    <button onclick="exportData()">Export</button>
+    <button onclick="document.getElementById('importFile').click()">Import</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+  </div>
+</header>
+
+<main>
+  <div id="roomsView">
+    <div class="rooms-grid" id="roomsGrid"></div>
+  </div>
+
+  <div id="roomView" style="display:none">
+    <div class="back-bar">
+      <button class="back-btn" onclick="showRoomList()">← Πίσω</button>
+    </div>
+
+    <div class="room-info">
+      <div class="info-row">
+        <label>Όνομα</label>
+        <input type="text" id="roomName" data-field="name">
+      </div>
+      <div class="info-row">
+        <label>Κωδικός Locker</label>
+        <input type="text" id="roomLocker" data-field="locker_code" placeholder="π.χ. 1234" inputmode="numeric">
+      </div>
+      <div class="info-row">
+        <label>Google Maps Link</label>
+        <div class="map-link-row">
+          <input type="text" id="roomMap" data-field="map_link" placeholder="https://maps.google.com/...">
+          <button class="open-map-btn" id="openMapBtn" onclick="openMap()">Open</button>
+        </div>
+      </div>
+      <div class="info-row">
+        <label>Σημειώσεις</label>
+        <textarea id="roomNotes" data-field="notes" placeholder="..."></textarea>
+      </div>
+
+      <div class="room-actions">
+        <button class="primary" onclick="importTemplate()">+ Master Template</button>
+        <button class="danger" onclick="deleteRoom()">Διαγραφή</button>
+      </div>
+    </div>
+
+    <div class="checklist-wrapper">
+      <div class="checklist-toolbar">
+        <div class="title">Checklist</div>
+        <div class="summary-grid" id="checklistSummary"></div>
+      </div>
+
+      <div class="checklist-list" id="checklistList"></div>
+
+      <div class="checklist-table-wrap">
+        <table class="checklist">
+          <thead>
+            <tr>
+              <th class="col-num">#</th>
+              <th>Κατηγορία</th>
+              <th>Σημείο Ελέγχου</th>
+              <th class="col-status">Status</th>
+              <th>Σημειώσεις</th>
+              <th class="col-date">Έλεγχος</th>
+              <th class="col-actions"></th>
+            </tr>
+          </thead>
+          <tbody id="checklistBody"></tbody>
+        </table>
+      </div>
+
+      <button class="add-row-btn" onclick="addBlankItem()">+ Προσθήκη Σημείου</button>
+    </div>
+  </div>
+</main>
+
+<div class="modal-overlay" id="addRoomModal">
+  <div class="modal">
+    <div class="modal-header">Νέο Δωμάτιο</div>
+    <div class="modal-body">
+      <label>Όνομα</label>
+      <input type="text" id="newRoomName" placeholder="π.χ. Apartment 3B">
+      <label>Κωδικός Locker (προαιρετικό)</label>
+      <input type="text" id="newRoomLocker" inputmode="numeric">
+      <label>Google Maps Link (προαιρετικό)</label>
+      <input type="text" id="newRoomMap" placeholder="https://maps.google.com/...">
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeAddRoomModal()">Ακύρωση</button>
+      <button class="primary" onclick="submitNewRoom()">Δημιουργία</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="importModal">
+  <div class="modal">
+    <div class="modal-header">Import από JSON</div>
+    <div class="modal-body">
+      <p style="margin-bottom:14px; font-size:14px; color:#555;">
+        Επέλεξε τι θες να γίνει με τα υπάρχοντα δεδομένα:
+      </p>
+      <label class="radio-label">
+        <input type="radio" name="importMode" value="replace" checked>
+        Αντικατάσταση όλων
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="importMode" value="append">
+        Προσθήκη στα υπάρχοντα
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeImportModal()">Ακύρωση</button>
+      <button class="primary" onclick="confirmImport()">Συνέχεια</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let currentRoom = null;
+let currentItems = [];
+let pendingImportData = null;
+let collapsedCats = {};
+const STATUSES = ['', 'OK', 'Action Required', 'Replaced', 'Scheduled', 'N/A'];
+
+async function api(path, method = 'GET', body = null) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch('/api' + path, opts);
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+async function loadRooms() {
+  const rooms = await api('/rooms');
+  const grid = document.getElementById('roomsGrid');
+  grid.innerHTML = '';
+  rooms.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'room-card';
+    card.onclick = () => openRoom(r.id);
+    const issues = r.issues || 0;
+    const ok = r.ok_items || 0;
+    const total = r.total_items || 0;
+    card.innerHTML = `
+      <h3>${escape(r.name)}</h3>
+      <div class="room-meta">
+        <span>${total} σημεία</span>
+        ${ok > 0 ? `<span class="ok">✓ ${ok}</span>` : ''}
+        ${issues > 0 ? `<span class="issue">⚠ ${issues}</span>` : ''}
+        ${r.locker_code ? `<span>🔒 ${escape(r.locker_code)}</span>` : ''}
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+  const addCard = document.createElement('div');
+  addCard.className = 'add-room-card';
+  addCard.onclick = openAddRoomModal;
+  addCard.innerHTML = '<span class="plus">+</span> Νέο Δωμάτιο';
+  grid.appendChild(addCard);
+}
+
+function showRoomList() {
+  document.getElementById('roomsView').style.display = '';
+  document.getElementById('roomView').style.display = 'none';
+  currentRoom = null;
+  loadRooms();
+}
+
+function openAddRoomModal() {
+  document.getElementById('newRoomName').value = '';
+  document.getElementById('newRoomLocker').value = '';
+  document.getElementById('newRoomMap').value = '';
+  document.getElementById('addRoomModal').classList.add('show');
+  setTimeout(() => document.getElementById('newRoomName').focus(), 100);
+}
+
+function closeAddRoomModal() {
+  document.getElementById('addRoomModal').classList.remove('show');
+}
+
+async function submitNewRoom() {
+  const name = document.getElementById('newRoomName').value.trim();
+  if (!name) { toast('Όνομα απαραίτητο'); return; }
+  const locker = document.getElementById('newRoomLocker').value.trim();
+  const map = document.getElementById('newRoomMap').value.trim();
+  const res = await api('/rooms', 'POST', { name, locker_code: locker, map_link: map });
+  closeAddRoomModal();
+  toast('Δημιουργήθηκε');
+  openRoom(res.id);
+}
+
+async function openRoom(rid) {
+  const data = await api('/rooms/' + rid);
+  currentRoom = data.room;
+  currentItems = data.items;
+  if (!collapsedCats[rid]) collapsedCats[rid] = new Set();
+
+  document.getElementById('roomsView').style.display = 'none';
+  document.getElementById('roomView').style.display = '';
+
+  document.getElementById('roomName').value = currentRoom.name || '';
+  document.getElementById('roomLocker').value = currentRoom.locker_code || '';
+  document.getElementById('roomMap').value = currentRoom.map_link || '';
+  document.getElementById('roomNotes').value = currentRoom.notes || '';
+  updateMapBtn();
+
+  renderChecklist();
+  window.scrollTo(0, 0);
+}
+
+function updateMapBtn() {
+  const v = document.getElementById('roomMap').value.trim();
+  document.getElementById('openMapBtn').disabled = !v;
+}
+
+function openMap() {
+  const v = document.getElementById('roomMap').value.trim();
+  if (v) window.open(v, '_blank');
+}
+
+async function deleteRoom() {
+  if (!currentRoom) return;
+  if (!confirm(`Διαγραφή του "${currentRoom.name}" και όλων των checklist items;`)) return;
+  await api('/rooms/' + currentRoom.id, 'DELETE');
+  toast('Διαγράφηκε');
+  showRoomList();
+}
+
+let roomSaveTimer = null;
+function scheduleRoomSave() {
+  clearTimeout(roomSaveTimer);
+  roomSaveTimer = setTimeout(saveRoom, 600);
+}
+
+async function saveRoom() {
+  if (!currentRoom) return;
+  const payload = {
+    name: document.getElementById('roomName').value,
+    locker_code: document.getElementById('roomLocker').value,
+    map_link: document.getElementById('roomMap').value,
+    notes: document.getElementById('roomNotes').value
+  };
+  await api('/rooms/' + currentRoom.id, 'PATCH', payload);
+  Object.assign(currentRoom, payload);
+}
+
+document.querySelectorAll('#roomView .info-row input, #roomView .info-row textarea').forEach(el => {
+  el.addEventListener('input', () => {
+    scheduleRoomSave();
+    if (el.id === 'roomMap') updateMapBtn();
+  });
+});
+
+function statusClass(status) {
+  return status ? 'status-' + status.replace(/[^a-zA-Z]/g, '-') : '';
+}
+
+function renderChecklist() {
+  renderMobileList();
+  renderDesktopTable();
+  updateSummary();
+}
+
+function renderMobileList() {
+  const list = document.getElementById('checklistList');
+  list.innerHTML = '';
+
+  if (currentItems.length === 0) {
+    list.innerHTML = '<div class="empty-state">Δεν υπάρχουν σημεία ελέγχου ακόμα.<br><br>Πάτησε <strong>+ Master Template</strong> για τα 41 standard σημεία ή <strong>+ Προσθήκη</strong> για δικά σου.</div>';
+    return;
+  }
+
+  const groups = {};
+  const order = [];
+  let displayNum = 0;
+  currentItems.forEach(item => {
+    displayNum++;
+    const cat = item.category || 'Άλλα';
+    if (!groups[cat]) { groups[cat] = []; order.push(cat); }
+    groups[cat].push({ ...item, _num: displayNum });
+  });
+
+  order.forEach(cat => {
+    const collapsed = collapsedCats[currentRoom.id].has(cat);
+    const okCount = groups[cat].filter(i => i.status === 'OK').length;
+    const issueCount = groups[cat].filter(i => i.status === 'Action Required').length;
+
+    const catEl = document.createElement('div');
+    catEl.className = 'cat-header' + (collapsed ? ' collapsed' : '');
+    catEl.innerHTML = `
+      <span>${escape(cat)}</span>
+      <span class="cat-right">
+        ${issueCount > 0 ? `<span style="color:#c62828; font-weight:700;">⚠ ${issueCount}</span>` : ''}
+        ${okCount > 0 ? `<span style="color:#2e7d32; font-weight:700;">✓ ${okCount}</span>` : ''}
+        <span class="cat-count">${groups[cat].length}</span>
+        <span class="toggle">▼</span>
+      </span>
+    `;
+    catEl.onclick = () => toggleCategory(cat);
+    list.appendChild(catEl);
+
+    if (collapsed) return;
+
+    groups[cat].forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'item-card';
+      card.dataset.id = item.id;
+      card.innerHTML = `
+        <div class="item-num-desc">
+          <span class="item-num">${item._num}</span>
+          <input type="text" class="item-desc" data-field="description" value="${escape(item.description || '')}" placeholder="Σημείο ελέγχου">
+        </div>
+        <div class="item-meta-row">
+          <div class="meta-field">
+            <label>Status</label>
+            <select class="item-status ${statusClass(item.status)}" data-field="status">
+              ${STATUSES.map(s => `<option value="${s}" ${s === item.status ? 'selected' : ''}>${s || '— Επέλεξε —'}</option>`).join('')}
+            </select>
+          </div>
+          <div class="meta-field">
+            <label>Σημειώσεις</label>
+            <input type="text" class="item-note" data-field="note" value="${escape(item.note || '')}" placeholder="—">
+          </div>
+        </div>
+        <div class="item-bottom">
+          <span class="item-date">${item.last_checked ? '🕐 ' + escape(item.last_checked) : ''}</span>
+          <button class="delete-btn">Διαγραφή</button>
+        </div>
+      `;
+
+      card.querySelectorAll('input, select').forEach(el => {
+        const evt = el.tagName === 'SELECT' ? 'change' : 'input';
+        el.addEventListener(evt, () => scheduleItemSave(item.id, card));
+      });
+      card.querySelector('.delete-btn').onclick = () => deleteItem(item.id);
+      list.appendChild(card);
+    });
+  });
+}
+
+function renderDesktopTable() {
+  const tbody = document.getElementById('checklistBody');
+  tbody.innerHTML = '';
+
+  if (currentItems.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Πάτησε <strong>+ Master Template</strong> ή <strong>+ Προσθήκη Σημείου</strong> για να ξεκινήσεις.</td></tr>';
+    return;
+  }
+
+  let lastCat = null;
+  let displayNum = 0;
+
+  currentItems.forEach(item => {
+    const cat = item.category || '';
+    if (cat && cat !== lastCat) {
+      const catRow = document.createElement('tr');
+      catRow.className = 'cat-row';
+      catRow.innerHTML = `<td colspan="7">${escape(cat)}</td>`;
+      tbody.appendChild(catRow);
+      lastCat = cat;
+    } else if (!cat) lastCat = null;
+
+    displayNum++;
+    const tr = document.createElement('tr');
+    tr.dataset.id = item.id;
+    tr.innerHTML = `
+      <td class="col-num">${displayNum}</td>
+      <td><input type="text" data-field="category" value="${escape(item.category || '')}" placeholder="—"></td>
+      <td><input type="text" data-field="description" value="${escape(item.description || '')}"></td>
+      <td class="col-status">
+        <select data-field="status" class="${statusClass(item.status)}">
+          ${STATUSES.map(s => `<option value="${s}" ${s === item.status ? 'selected' : ''}>${s || '—'}</option>`).join('')}
+        </select>
+      </td>
+      <td><input type="text" data-field="note" value="${escape(item.note || '')}" placeholder="—"></td>
+      <td class="col-date">${escape(item.last_checked || '')}</td>
+      <td class="col-actions"><button class="delete-btn" title="Διαγραφή">×</button></td>
+    `;
+    tr.querySelectorAll('input, select').forEach(el => {
+      const evt = el.tagName === 'SELECT' ? 'change' : 'input';
+      el.addEventListener(evt, () => scheduleItemSave(item.id, tr));
+    });
+    tr.querySelector('.delete-btn').onclick = () => deleteItem(item.id);
+    tbody.appendChild(tr);
+  });
+}
+
+function toggleCategory(cat) {
+  const set = collapsedCats[currentRoom.id];
+  if (set.has(cat)) set.delete(cat);
+  else set.add(cat);
+  renderMobileList();
+}
+
+function updateSummary() {
+  const total = currentItems.length;
+  const ok = currentItems.filter(i => i.status === 'OK').length;
+  const issues = currentItems.filter(i => i.status === 'Action Required').length;
+  const pending = currentItems.filter(i => !i.status).length;
+  document.getElementById('checklistSummary').innerHTML = `
+    <div class="summary-cell"><span class="num">${total}</span><span class="lbl">Σύνολο</span></div>
+    <div class="summary-cell ok"><span class="num">${ok}</span><span class="lbl">OK</span></div>
+    <div class="summary-cell issue"><span class="num">${issues}</span><span class="lbl">Issues</span></div>
+    <div class="summary-cell pending"><span class="num">${pending}</span><span class="lbl">Εκκρεμή</span></div>
+  `;
+}
+
+const itemSaveTimers = {};
+function scheduleItemSave(iid, container) {
+  clearTimeout(itemSaveTimers[iid]);
+  itemSaveTimers[iid] = setTimeout(() => saveItem(iid, container), 500);
+}
+
+async function saveItem(iid, container) {
+  const payload = {};
+  container.querySelectorAll('[data-field]').forEach(el => {
+    payload[el.dataset.field] = el.value;
+  });
+  const res = await fetch('/api/items/' + iid, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  if (res.ok) {
+    const item = currentItems.find(i => i.id === iid);
+    if (item) {
+      const statusChanged = ('status' in payload) && payload.status !== item.status;
+      Object.assign(item, payload);
+      if (statusChanged) {
+        item.last_checked = payload.status ? new Date().toISOString().slice(0, 16).replace('T', ' ') : '';
+        renderMobileList();
+        renderDesktopTable();
+      }
+    }
+    updateSummary();
+  }
+}
+
+async function addBlankItem() {
+  if (!currentRoom) return;
+  const res = await api(`/rooms/${currentRoom.id}/items`, 'POST', {
+    description: 'Νέο σημείο ελέγχου',
+    category: ''
+  });
+  const data = await api('/rooms/' + currentRoom.id);
+  currentItems = data.items;
+  renderChecklist();
+  setTimeout(() => {
+    const card = document.querySelector(`.item-card[data-id="${res.id}"], tr[data-id="${res.id}"]`);
+    if (card) {
+      const descInput = card.querySelector('[data-field=description]');
+      if (descInput) {
+        descInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        descInput.focus();
+        descInput.select();
+      }
+    }
+  }, 100);
+}
+
+async function deleteItem(iid) {
+  if (!confirm('Διαγραφή σημείου ελέγχου;')) return;
+  await api('/items/' + iid, 'DELETE');
+  currentItems = currentItems.filter(i => i.id !== iid);
+  renderChecklist();
+  toast('Διαγράφηκε');
+}
+
+async function importTemplate() {
+  if (!currentRoom) return;
+  const hasItems = currentItems.length > 0;
+  const msg = hasItems
+    ? 'Θα διαγραφούν τα υπάρχοντα σημεία ελέγχου και θα μπει το standard template (41 σημεία). Συνέχεια;'
+    : 'Θα προστεθούν 41 standard σημεία ελέγχου. Συνέχεια;';
+  if (!confirm(msg)) return;
+  await api(`/rooms/${currentRoom.id}/import-template`, 'POST');
+  const data = await api('/rooms/' + currentRoom.id);
+  currentItems = data.items;
+  renderChecklist();
+  toast('Template εφαρμόστηκε');
+}
+
+function exportData() {
+  window.location.href = '/api/export';
+}
+
+function importData(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      pendingImportData = JSON.parse(e.target.result);
+      document.getElementById('importModal').classList.add('show');
+    } catch (err) { toast('Μη έγκυρο JSON'); }
+    ev.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function closeImportModal() {
+  document.getElementById('importModal').classList.remove('show');
+  pendingImportData = null;
+}
+
+async function confirmImport() {
+  const mode = document.querySelector('input[name=importMode]:checked').value;
+  const payload = { ...pendingImportData, mode };
+  const res = await api('/import', 'POST', payload);
+  closeImportModal();
+  toast(`Imported ${res.imported} δωμάτια`);
+  showRoomList();
+}
+
+function escape(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])
+  );
+}
+
+showRoomList();
+</script>
+</body>
+</html>

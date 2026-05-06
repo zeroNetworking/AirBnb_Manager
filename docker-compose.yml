@@ -1,0 +1,18 @@
+services:
+  airbnb-manager:
+    build: .
+    container_name: airbnb-manager
+    ports:
+      - "5050:5050"
+    volumes:
+      - ./database:/data
+    restart: unless-stopped
+    environment:
+      - DB_PATH=/data/airbnb.db
+      - TZ=Europe/Nicosia
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5050/api/rooms"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
